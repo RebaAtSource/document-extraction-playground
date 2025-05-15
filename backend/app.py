@@ -95,27 +95,41 @@ Fields to extract:
 
 Return the data in this exact JSON format:
 {{
-    "Invoice Date": null,
-    "Invoice Number": null,
-    "Vendor Name": null,
-    "Vendor Order Number/Sales Order Number": null,
-    "Account Number": null,
-    "Bill To Address": null,
-    "Ship To Address": null,
-    "Source PO Number": null,
-    "Packaging Fee": null,
-    "Total": null,
-    "Sales Tax": null,
-    "Freight/Shipping": null,
-    "Terms": null,
-    "Banking Info": null,
-    "Due Date": null,
-    "Currency": null,
-    "Prepayments/Deposit": null,
-    "Balance Due": null
+    "vendor_name": null,
+    "invoice_date": null,
+    "invoice_number": null,
+    "vendor_order_number": null,
+    "account_number": null,
+    "bill_to_address": {{
+        "company_name": null,
+        "address_line_1": null,
+        "address_line_2": null,
+        "city": null,
+        "state": null,
+        "zip": null
+    }},
+    "ship_to_address": {{
+        "company_name": null,
+        "address_line_1": null,
+        "address_line_2": null,
+        "city": null,
+        "state": null,
+        "zip": null
+    }},
+    "source_po_number": null,
+    "packaging_fee": null,
+    "total": null,
+    "sales_tax": null,
+    "freight_shipping": null,
+    "terms": null,
+    "banking_info": null,
+    "due_date": null,
+    "currency": null,
+    "prepayments_deposit": null,
+    "balance_due": null
 }}
 
-Replace each null with the found value, or leave as null if not found. Ensure the JSON structure remains exactly as shown."""
+Replace each null with the found value, or leave as null if not found. Ensure the JSON structure remains exactly as shown. Do not include any other text or comments."""
 
         # Call GPT-4 with new client format
         response = client.chat.completions.create(
