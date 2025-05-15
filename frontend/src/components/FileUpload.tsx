@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Box, Typography, Paper } from '@mui/material'
+import { Box, Text, Center } from '@chakra-ui/react'
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void
@@ -23,29 +23,28 @@ const FileUpload = ({ onFileUpload }: FileUploadProps) => {
   })
 
   return (
-    <Paper
+    <Center
       {...getRootProps()}
-      sx={{
-        p: 3,
-        border: '2px dashed',
-        borderColor: isDragActive ? 'primary.main' : 'grey.300',
-        bgcolor: isDragActive ? 'action.hover' : 'background.paper',
-        cursor: 'pointer',
-        '&:hover': {
-          bgcolor: 'action.hover'
-        }
-      }}
+      p={6}
+      border="2px"
+      borderStyle="dashed"
+      borderColor={isDragActive ? "blue.500" : "gray.200"}
+      bg={isDragActive ? "blue.50" : "white"}
+      cursor="pointer"
+      transition="all 0.2s"
+      _hover={{ bg: "gray.50" }}
+      borderRadius="md"
     >
       <input {...getInputProps()} />
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" gutterBottom>
+      <Box textAlign="center">
+        <Text fontSize="lg" fontWeight="semibold" mb={2}>
           {isDragActive ? 'Drop the PDF here' : 'Drag & drop a PDF file here'}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+        </Text>
+        <Text fontSize="sm" color="gray.500">
           or click to select a file
-        </Typography>
+        </Text>
       </Box>
-    </Paper>
+    </Center>
   )
 }
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
-import { Box, IconButton, Typography } from '@mui/material'
+import { Box, Button, Text, Stack } from '@chakra-ui/react'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer.css'
 
@@ -19,25 +19,25 @@ const PdfViewer = ({ file }: PdfViewerProps) => {
     setNumPages(numPages)
   }
 
+  const goToPreviousPage = () => {
+    setPageNumber((prev) => Math.max(prev - 1, 1))
+  }
+
+  const goToNextPage = () => {
+    setPageNumber((prev) => Math.min(prev + 1, numPages || 1))
+  }
+
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="h6" gutterBottom>
+    <Box mt={4}>
+      <Text fontSize="xl" fontWeight="bold" mb={2}>
         PDF Preview
-      </Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          maxHeight: '500px',
-          overflow: 'auto'
-        }}
-      >
+      </Text>
+      <Stack direction="column" align="center" w="100%" overflowX="auto">
         <Document
           file={file}
           onLoadSuccess={onDocumentLoadSuccess}
-          loading={<Typography>Loading PDF...</Typography>}
-          error={<Typography color="error">Error loading PDF.</Typography>}
+          loading={<Text>Loading PDF...</Text>}
+          error={<Text color="red.500">Error loading PDF.</Text>}
         >
           <Page
             pageNumber={pageNumber}
@@ -46,12 +46,37 @@ const PdfViewer = ({ file }: PdfViewerProps) => {
             scale={1.2}
           />
         </Document>
-        {numPages && (
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            Page {pageNumber} of {numPages}
-          </Typography>
+        
+        {numPages && numPages > 1 && (
+          <Stack direction="row" align="center" mt={4}>
+            <Button
+              onClick={goToPreviousPage}
+              disabled={pageNumber <= 1}
+              size="sm"
+              colorScheme="blue"
+            >
+              Previous
+            </Button>
+            <Text>
+              Page {pageNumber} of {numPages}
+            </Text>
+            <Button
+              onClick={goToNextPage}
+              disabled={pageNumber >= numPages}
+              size="sm"
+              colorScheme="blue"
+            >
+              Next
+            </Button>
+          </Stack>
         )}
-      </Box>
+        
+        {numPages === 1 && (
+          <Text fontSize="sm">
+            Single page document
+          </Text>
+        )}
+      </Stack>
     </Box>
   )
 }

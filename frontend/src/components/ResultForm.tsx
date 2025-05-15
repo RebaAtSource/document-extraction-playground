@@ -1,4 +1,4 @@
-import { Box, Typography, TextField } from '@mui/material';
+import { Box, Text, VStack, FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react'
 
 interface ResultFormProps {
   data: {
@@ -9,28 +9,37 @@ interface ResultFormProps {
 const ResultForm = ({ data }: ResultFormProps) => {
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
+      <Text fontSize="xl" fontWeight="semibold" mb={4}>
         Extracted Data
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {Object.entries(data).map(([key, value]) => (
-          <TextField
-            key={key}
-            label={key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-            value={value || ''}
-            multiline={key.includes('address')}
-            rows={key.includes('address') ? 3 : 1}
-            InputProps={{
-              readOnly: true,
-            }}
-            fullWidth
-            variant="outlined"
-            size="small"
-          />
-        ))}
-      </Box>
+      </Text>
+      <VStack spacing={4} align="stretch">
+        {Object.entries(data).map(([key, value]) => {
+          const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+          const isMultiline = key.includes('address')
+          
+          return (
+            <FormControl key={key}>
+              <FormLabel>{label}</FormLabel>
+              {isMultiline ? (
+                <Textarea
+                  value={value || ''}
+                  isReadOnly
+                  size="sm"
+                  rows={3}
+                />
+              ) : (
+                <Input
+                  value={value || ''}
+                  isReadOnly
+                  size="sm"
+                />
+              )}
+            </FormControl>
+          )
+        })}
+      </VStack>
     </Box>
-  );
-};
+  )
+}
 
-export default ResultForm; 
+export default ResultForm 

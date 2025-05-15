@@ -1,23 +1,10 @@
 import { useState } from 'react'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { Container, Box, Typography, Paper } from '@mui/material'
+import { Container, Box, Text, Stack } from '@chakra-ui/react'
 import axios from 'axios'
 import FileUpload from './components/FileUpload'
 import PdfViewer from './components/PdfViewer'
 import ResultForm from './components/ResultForm'
 import LoadingSpinner from './components/LoadingSpinner'
-import './App.css'
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-})
 
 // Create axios instance with default config
 const api = axios.create({
@@ -85,30 +72,28 @@ function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Invoice Data Extraction
-        </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
-          <Paper sx={{ flex: 1, p: 2 }}>
-            <FileUpload onFileUpload={handleFileUpload} />
-            {file && <PdfViewer file={file} />}
-          </Paper>
-          
-          <Paper sx={{ flex: 1, p: 2 }}>
-            {loading && <LoadingSpinner />}
-            {error && (
-              <Typography color="error" align="center">
-                {error}
-              </Typography>
-            )}
-            {extractedData && <ResultForm data={extractedData} />}
-          </Paper>
+    <Container maxW="container.xl" py={8}>
+      <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={6}>
+        Invoice Data Extraction
+      </Text>
+      
+      <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
+        <Box flex={1} p={4} borderWidth="1px" borderRadius="lg">
+          <FileUpload onFileUpload={handleFileUpload} />
+          {file && <PdfViewer file={file} />}
         </Box>
-      </Container>
-    </ThemeProvider>
+        
+        <Box flex={1} p={4} borderWidth="1px" borderRadius="lg">
+          {loading && <LoadingSpinner />}
+          {error && (
+            <Text color="red.500" textAlign="center">
+              {error}
+            </Text>
+          )}
+          {extractedData && <ResultForm data={extractedData} />}
+        </Box>
+      </Stack>
+    </Container>
   )
 }
 
