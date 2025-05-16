@@ -87,6 +87,7 @@ Fields to extract:
 - vendor_name: Company or business name issuing the invoice
 - invoice_date: Look for any date format associated with invoice date/issue date
 - due_date: Payment due date in any format
+- ship_date: Look for any date format associated with shipping date
 - invoice_number: Look for invoice #, reference number, or similar identifiers
 - vendor_order_number: Look for SO#, Order #, or similar references
 - account_number: Any customer or account reference number
@@ -95,19 +96,22 @@ Fields to extract:
 - banking_info: Any bank account, routing numbers, or payment instructions
 - currency: Type of currency used (USD, EUR, etc.)
 - bill_to_address: Complete billing address including company name if present
-- ship_to_address: Complete shipping address including company name if present
+- ship_to_address: Complete shipping address including company name if present. If the ship to address includes Source Logistics, this is NOT the shipping address - leave null
 - invoice_items:
 -- spec_tag: Look for text that contains "Item" or "Spec" or "Tag", typically XX-### format, or similar
--- description: will typically describe a product or service
+-- description: will typically describe a product or service, like 'decorative bed scarf @ King Guest Room'
 -- quantity: Look for numbers that represent a quantity, typically a whole number
 -- units: Look for text that represents a unit of measure, typically 2 or 3 letter codes. If not found, use "EA" as the default unit.
 -- overage: Look for numbers that represent a quantity overage, typically a whole number
 -- unit_price: Look for numbers that represent a price per unit, typically a float with 2 decimal places
+-- discount: Look for numbers that represent a discount, typically a %
 -- extended_price: Look for numbers that represent a total price, typically a float with 2 decimal places
 -- fob: Look for text that represents a shipping term, typically a city, state, or country
+- subtotal: Look for numbers that represent a subtotal, typically a float with 2 decimal places
 - packing_fee Any packaging or handling charges
 - freight: Any shipping, freight, or delivery charges
 - sales_tax: Tax amount or rate applied
+- sales_tax_rate: Tax rate applied, typically a %
 - total: Final total amount of the invoice
 - prepayment: Any advance payments or deposits applied
 - balance_due: Remaining amount to be paid

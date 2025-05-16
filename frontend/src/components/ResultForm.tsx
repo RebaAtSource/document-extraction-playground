@@ -14,7 +14,7 @@ interface ItemFieldsProps {
   data: Partial<IItem>;
 }
 
-const currencyFields = ['total', 'packaging_fee', 'freight', 'sales_tax', 'prepayments_deposit', 'balance_due', 'unit_price', 'extended_price'];
+const currencyFields = ['total', 'packaging_fee', 'freight', 'sales_tax', 'prepayments_deposit', 'balance_due', 'unit_price', 'extended_price', 'subtotal'];
 const choseInputType = (key: string, value: string|number|null) => {
   if (currencyFields.includes(key)) {
     return (<NumberInput precision={2} defaultValue={value as number} size="sm" >
@@ -52,14 +52,15 @@ const AddressFields: React.FC<AddressFieldsProps> = ({ data }) => {
 
 const ItemFields: React.FC<ItemFieldsProps> = ({ data }) => {
   const fields = [
-    { label: 'Spec Tag', key: 'spec_tag', colSpan: 4 },
-    { label: 'Description', key: 'description', colSpan: 4 },
+    { label: 'Spec Tag', key: 'spec_tag', colSpan: 5 },
+    { label: 'Description', key: 'description', colSpan: 5 },
     { label: 'Quantity', key: 'quantity', colSpan: 1 },
     { label: 'Units', key: 'units', colSpan: 1 },
     { label: 'Overage', key: 'overage', colSpan: 1 },
+    { label: 'Discount', key: 'discount', colSpan: 1 },
     { label: 'Unit Price', key: 'unit_price', colSpan: 1 },
-    { label: 'Extended Price', key: 'extended_price', colSpan: 4 },
-    { label: 'FOB', key: 'fob', colSpan: 4 },
+    { label: 'Extended Price', key: 'extended_price', colSpan: 5 },
+    { label: 'FOB', key: 'fob', colSpan: 5 },
   ];
 
   return (
