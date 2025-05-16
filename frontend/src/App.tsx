@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Container, Divider, Box, Text, Stack, FormControl, Input, FormLabel } from '@chakra-ui/react'
+import { Container, Box, Text, Stack} from '@chakra-ui/react'
 import axios from 'axios'
 import FileUpload from './components/FileUpload'
 import PdfViewer from './components/PdfViewer'
@@ -9,7 +9,7 @@ import LoadingSpinner from './components/LoadingSpinner'
 // Create axios instance with default config
 const api = axios.create({
   baseURL: 'http://localhost:3000',
-  timeout: 30000, // 30 seconds timeout
+  timeout: 60000, // 60 seconds timeout
   headers: {
     'Accept': 'application/json'
   }
