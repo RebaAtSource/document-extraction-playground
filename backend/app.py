@@ -7,7 +7,7 @@ import os
 import base64
 import io
 import logging
-
+import tiktoken
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -28,6 +28,12 @@ def extract_text_from_pdf(pdf_file):
         text += page.extract_text()
     return text
 
+# Estimate the token count of a prompt
+def estimate_token_count(prompt: str, response: str | None) -> dict[str, int]:
+    tokenizer = tiktoken.encoding_for_model("gpt-4")
+    input_tokens = len(tokenizer.encode(prompt))
+    output_tokens = 0 if response is None else len(tokenizer.encode(response))
+    return {"input_tokens": input_tokens, "output_tokens": output_tokens}
 
 @app.route("/api/process-pdf", methods=["POST", "OPTIONS"])
 def process_pdf():
@@ -156,8 +162,9 @@ Return the data in a similar JSON format:
         # Extract the JSON response (new format)
         extracted_data = response.choices[0].message.content
         logger.debug("Successfully processed with GPT-4")
+        token_counts = estimate_token_count(prompt, extracted_data)
 
-        return jsonify({"success": True, "data": extracted_data})
+        return jsonify({"success": True, "data": extracted_data, "tokens": token_counts})
 
     except Exception as e:
         logger.error(f"Error processing request: {str(e)}", exc_info=True)

@@ -4,6 +4,10 @@ import { IInvoice, IAddress, IItem } from '../types/invoice'
 
 interface ResultFormProps {
   data: Partial<IInvoice>;
+  tokenCounts: {
+    input_tokens: number;
+    output_tokens: number;
+  };
 }
 
 interface AddressFieldsProps {
@@ -75,7 +79,7 @@ const ItemFields: React.FC<ItemFieldsProps> = ({ data }) => {
   );
 };
 
-const ResultForm: React.FC<ResultFormProps> = ({ data }) => {
+const ResultForm: React.FC<ResultFormProps> = ({ data, tokenCounts }) => {
   return (
     <Box height="calc(100vh - 240px)" display="flex" flexDirection="column">
       <Text fontSize="xl" fontWeight="semibold" mb={4}>
@@ -98,6 +102,7 @@ const ResultForm: React.FC<ResultFormProps> = ({ data }) => {
         }}
       >
         <VStack spacing={4} align="stretch">
+          <Text fontSize="sm" color="gray.500">{tokenCounts.input_tokens} input tokens, {tokenCounts.output_tokens} output tokens</Text>
           {Object.entries(data).map(([key, value]) => {
             const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
             const isAddress = key === 'bill_to_address' || key === 'ship_to_address';

@@ -19,6 +19,7 @@ function App() {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [extractedData, setExtractedData] = useState<any>(null)
+  const [tokenCounts, setTokenCounts] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
   const handleFileUpload = async (uploadedFile: File) => {
@@ -49,6 +50,7 @@ function App() {
         const parsedData = JSON.parse(response.data.data)
         console.log('Parsed data:', parsedData)
         setExtractedData(parsedData)
+        setTokenCounts(response.data.tokens)
       } else {
         throw new Error(response.data.error || 'Failed to extract data')
       }
@@ -90,7 +92,7 @@ function App() {
               {error}
             </Text>
           )}
-          {extractedData && <ResultForm data={extractedData} />}
+          {extractedData && <ResultForm data={extractedData} tokenCounts={tokenCounts} />}
         </Box>
       </Stack>
     </Container>
