@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Container, Box, Text, Stack } from '@chakra-ui/react'
+import { Container, Divider, Box, Text, Stack, FormControl, Input, FormLabel } from '@chakra-ui/react'
 import axios from 'axios'
 import FileUpload from './components/FileUpload'
 import PdfViewer from './components/PdfViewer'
@@ -74,7 +74,7 @@ function App() {
   return (
     <Container maxW="container.xl" py={8}>
       <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={6}>
-        Invoice Data Extraction
+        Document Data Extraction
       </Text>
       
       <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
@@ -83,7 +83,7 @@ function App() {
           {file && <PdfViewer file={file} />}
         </Box>
         
-        <Box flex={1} p={4} borderWidth="1px" borderRadius="lg">
+        <Box flex={1} backgroundColor="white" shadow="md" p={4} borderRadius="lg">
           {loading && <LoadingSpinner />}
           {error && (
             <Text color="red.500" textAlign="center">

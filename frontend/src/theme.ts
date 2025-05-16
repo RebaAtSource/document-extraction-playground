@@ -21,7 +21,16 @@ const theme = extendTheme({
         maxW: 'container.xl',
       },
     },
+    FormLabel: {
+      baseStyle: {
+        fontSize: 'sm',
+        fontWeight: 'medium',
+        color: 'gray.500',
+        margin: '0',
+      },
+    },
   },
+
 })
 
 export default theme 
