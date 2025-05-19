@@ -23,7 +23,7 @@ const theme = extendTheme({
     },
     FormLabel: {
       baseStyle: {
-        fontSize: 'sm',
+        fontSize: 'xs',
         fontWeight: 'medium',
         color: 'gray.500',
         margin: '0',

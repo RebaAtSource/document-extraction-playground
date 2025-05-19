@@ -68,7 +68,7 @@ const ItemFields: React.FC<ItemFieldsProps> = ({ data }) => {
   ];
 
   return (
-    <SimpleGrid columns={4} spacing={3} mb={16}>
+    <SimpleGrid columns={5} spacing={3} mb={16}>
       {fields.map(({ label, key, colSpan }) => (
         <FormControl key={key} gridColumn={`span ${colSpan}`}>
           <FormLabel>{label}</FormLabel>
