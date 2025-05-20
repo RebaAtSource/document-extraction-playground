@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Divider, Text, VStack, FormControl, FormLabel, Input, SimpleGrid, NumberInput, NumberInputField } from '@chakra-ui/react'
-import { IInvoice, IAddress, IItem } from '../types/invoice'
+import { IInvoice, IAddress, ILineItem } from '../types/interfaces'
 
 interface ResultFormProps {
   data: Partial<IInvoice>;
@@ -16,21 +16,36 @@ interface AddressFieldsProps {
 }
 
 interface ItemFieldsProps {
-  data: Partial<IItem>;
+  data: Partial<ILineItem>;
 }
 
 const currencyFields = ['total', 'packaging_fee', 'freight', 'sales_tax', 'prepayments_deposit', 'balance_due', 'unit_price', 'extended_price', 'subtotal'];
-const choseInputType = (key: string, value: string|number|null) => {
-  if (currencyFields.includes(key)) {
-    return (<NumberInput precision={2} defaultValue={value as number} size="sm" >
-    <NumberInputField alignItems="right"/>
-  </NumberInput>)
+const dateFields = ['invoice_date', 'due_date', 'ship_date'];
+
+const choseInputType = (key: string, value: string | number | null) => {
+  if (dateFields.includes(key)) {
+    return (
+      <Input
+        type="date"
+        defaultValue={value ? new Date(value as string).toISOString().split('T')[0] : ''}
+        size="sm"
+      />
+    );
   }
-  return (<Input
-    defaultValue={value?.toString() || ''}
-    size="sm"
-  />);
-}
+  if (currencyFields.includes(key)) {
+    return (
+      <NumberInput precision={2} defaultValue={value as number} size="sm">
+        <NumberInputField alignItems="right" />
+      </NumberInput>
+    );
+  }
+  return (
+    <Input
+      defaultValue={value?.toString() || ''}
+      size="sm"
+    />
+  );
+};
 
 
 const AddressFields: React.FC<AddressFieldsProps> = ({ data }) => {
@@ -38,8 +53,8 @@ const AddressFields: React.FC<AddressFieldsProps> = ({ data }) => {
     { label: 'Company Name', key: 'company_name', colSpan: 3 },
     { label: 'Address Line 1', key: 'address_line_1', colSpan: 3 },
     { label: 'Address Line 2', key: 'address_line_2', colSpan: 3 },
-    { label: 'City', key: 'city', colSpan: 1 },
-    { label: 'State', key: 'state', colSpan: 1 },
+    { label: 'City', key: 'city', colSpan: 3 },
+    { label: 'State', key: 'state', colSpan: 2 },
     { label: 'ZIP', key: 'zip', colSpan: 1 },
   ];
 
@@ -57,23 +72,23 @@ const AddressFields: React.FC<AddressFieldsProps> = ({ data }) => {
 
 const ItemFields: React.FC<ItemFieldsProps> = ({ data }) => {
   const fields = [
-    { label: 'Spec Tag', key: 'spec_tag', colSpan: 5 },
-    { label: 'Description', key: 'description', colSpan: 5 },
-    { label: 'Quantity', key: 'quantity', colSpan: 1 },
-    { label: 'Units', key: 'units', colSpan: 1 },
-    { label: 'Overage', key: 'overage', colSpan: 1 },
-    { label: 'Discount', key: 'discount', colSpan: 1 },
-    { label: 'Unit Price', key: 'unit_price', colSpan: 1 },
-    { label: 'Extended Price', key: 'extended_price', colSpan: 5 },
-    { label: 'FOB', key: 'fob', colSpan: 5 },
+    { label: 'Spec Tag', key: 'spec_tag', colSpan: 6 },
+    { label: 'Description', key: 'description', colSpan: 6 },
+    { label: 'Quantity', key: 'quantity', colSpan: 2 },
+    { label: 'Units', key: 'units', colSpan: 2 },
+    { label: 'Overage', key: 'overage', colSpan: 2 },
+    { label: 'Discount', key: 'discount', colSpan: 3 },
+    { label: 'Unit Price', key: 'unit_price', colSpan: 3 },
+    { label: 'Extended Price', key: 'extended_price', colSpan: 6 },
+    { label: 'FOB', key: 'fob', colSpan: 6 },
   ];
 
   return (
-    <SimpleGrid columns={5} spacing={3} mb={16}>
+    <SimpleGrid columns={6} spacing={3} mb={16}>
       {fields.map(({ label, key, colSpan }) => (
         <FormControl key={key} gridColumn={`span ${colSpan}`}>
           <FormLabel>{label}</FormLabel>
-          {choseInputType(key, data[key as keyof IItem] ?? null)}
+          {choseInputType(key, data[key as keyof ILineItem] ?? null)}
         </FormControl>
       ))}
     </SimpleGrid>
@@ -124,8 +139,8 @@ const ResultForm: React.FC<ResultFormProps> = ({ data, tokenCounts, model }) => 
               return (
                 <FormControl key={key}>
                   <FormLabel fontSize="lg" py={4}>Invoice Items</FormLabel>
-                  {Array.isArray(value) && value.map((item: IItem, index: number) => (
-                    <ItemFields key={`item-${index}`} data={item as Partial<IItem>} />
+                  {Array.isArray(value) && value.map((item: ILineItem, index: number) => (
+                    <ItemFields key={`item-${index}`} data={item as Partial<ILineItem>} />
                   ))}
                   <Divider my={4}/>
                 </FormControl>

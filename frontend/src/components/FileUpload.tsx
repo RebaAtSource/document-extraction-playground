@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Box, Text, Center } from '@chakra-ui/react'
+import { AiOutlineCloudUpload } from 'react-icons/ai'
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void
@@ -36,10 +37,8 @@ const FileUpload = ({ onFileUpload }: FileUploadProps) => {
       borderRadius="md"
     >
       <input {...getInputProps()} />
-      <Box textAlign="center">
-        <Text fontSize="lg" fontWeight="semibold" mb={2}>
-          {isDragActive ? 'Drop the PDF here' : 'Drag & drop a PDF file here'}
-        </Text>
+      <Box textAlign="center" display="flex" flexDirection="column" alignItems="center">
+        <AiOutlineCloudUpload size="3em" color={isDragActive ? 'blue.500' : 'gray.500'} />
         <Text fontSize="sm" color="gray.500">
           or click to select a file
         </Text>

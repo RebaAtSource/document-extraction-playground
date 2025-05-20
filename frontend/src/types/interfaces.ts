@@ -1,3 +1,10 @@
+export interface IDocumentTypes {
+  invoice: IInvoice;
+  spec: ISpec;
+  quote: IQuote;
+  submittal: ISubmittal;
+}
+
 export interface IAddress {
   company_name: string | null;
   address_line_1: string | null;
@@ -7,7 +14,7 @@ export interface IAddress {
   zip: string | null;
 }
 
-export interface IItem {
+export interface ILineItem {
   spec_tag: string | null;
   description: string | null;
   quantity: number | null;
@@ -33,7 +40,7 @@ export interface IInvoice {
   currency: string | null;
   bill_to_address: IAddress;
   ship_to_address: IAddress;
-  invoice_items: IItem[];
+  invoice_items: ILineItem[];
   subtotal: number | null;
   packaging_fee: number | null;
   freight: number | null;
@@ -42,4 +49,26 @@ export interface IInvoice {
   total: number | null;
   prepayments_deposit: number | null;
   balance_due: number | null;
-} 
+}
+
+export interface ISpec {
+  tag: string | null;
+  description: string | null;
+  quantity: number | null;
+}
+
+export interface IQuote {
+  quote_number: string | null;
+  quote_date: Date | null;
+  expiration_date: Date | null;
+  customer_name: string | null;
+  customer_address: IAddress;
+  line_items: ILineItem[];
+}
+
+export interface ISubmittal {
+  submittal_number: string | null;
+  submittal_date: Date | null;
+  spec_tag: ISpec;
+}
+
