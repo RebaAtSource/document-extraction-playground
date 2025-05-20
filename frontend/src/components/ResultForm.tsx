@@ -8,6 +8,7 @@ interface ResultFormProps {
     input_tokens: number;
     output_tokens: number;
   };
+  model: string;
 }
 
 interface AddressFieldsProps {
@@ -79,11 +80,11 @@ const ItemFields: React.FC<ItemFieldsProps> = ({ data }) => {
   );
 };
 
-const ResultForm: React.FC<ResultFormProps> = ({ data, tokenCounts }) => {
+const ResultForm: React.FC<ResultFormProps> = ({ data, tokenCounts, model }) => {
   return (
-    <Box height="calc(100vh - 240px)" display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column">
       <Text fontSize="xl" fontWeight="semibold" mb={4}>
-        Extracted Data
+        {model.charAt(0).toUpperCase() + model.slice(1)} Result
       </Text>
       <Box 
         flex="1"

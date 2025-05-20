@@ -2,12 +2,15 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from PyPDF2 import PdfReader
 from openai import OpenAI
+from azure.ai.inference import ChatCompletionsClient
+from azure.core.credentials import AzureKeyCredential
 from dotenv import load_dotenv
 import os
-import base64
-import io
 import logging
 import tiktoken
+import json
+import extract_with_ocr
+import anthropic
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -17,8 +20,21 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+extractor = extract_with_ocr.InvoiceExtractor()
+
 # Initialize OpenAI client
 client = OpenAI()  # It will automatically use OPENAI_API_KEY from environment
+
+# Initialize Clients
+openai_client = OpenAI(base_url="https://models.inference.ai.azure.com", api_key=os.environ["GITHUB_TOKEN"])
+openai_model = "gpt-4o"
+
+deepseek_client = ChatCompletionsClient(endpoint="https://models.github.ai/inference", credential=AzureKeyCredential(os.environ["GITHUB_TOKEN"]))
+deepseek_model = "deepseek/DeepSeek-V3-0324"
+
+anthropic_client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+anthropic_model = "claude-3-5-sonnet-20240620"
+
 
 
 def extract_text_from_pdf(pdf_file):
@@ -34,6 +50,40 @@ def estimate_token_count(prompt: str, response: str | None) -> dict[str, int]:
     input_tokens = len(tokenizer.encode(prompt))
     output_tokens = 0 if response is None else len(tokenizer.encode(response))
     return {"input_tokens": input_tokens, "output_tokens": output_tokens}
+
+# Extracts a JSON object from a string response.
+def extract_json_from_response(response_content):
+    """
+    Extracts a JSON object from a string response.
+
+    Parameters:
+    response_content (str): The response string from which to extract the JSON object.
+
+    Returns:
+    dict: The extracted JSON object as a Python dictionary, or None if parsing fails.
+    """
+    logger.debug("Raw response content: %s", response_content)
+    try:
+        # Directly parse the JSON string into a Python dictionary
+        parsed_json = json.loads(response_content)
+        logger.debug("Parsed JSON object: %s", parsed_json)
+        return parsed_json
+    except json.JSONDecodeError as e:
+        logger.error("Error decoding JSON: %s", e)
+        logger.error("Problematic JSON string: %s", response_content)
+        # Attempt to trim the string to extract JSON
+        start_index = response_content.find('{')
+        end_index = response_content.rfind('}') + 1
+        if start_index != -1 and end_index != -1:
+            trimmed_content = response_content[start_index:end_index]
+            try:
+                parsed_json = json.loads(trimmed_content)
+                logger.debug("Parsed JSON object after trimming: %s", parsed_json)
+                return parsed_json
+            except json.JSONDecodeError as e:
+                logger.error("Error decoding JSON after trimming: %s", e)
+                return None
+        return None
 
 @app.route("/api/process-pdf", methods=["POST", "OPTIONS"])
 def process_pdf():
@@ -144,10 +194,9 @@ Return the data in a similar JSON format:
         "fob": North Carolina,
     }}]
 }}"""
-
-        # Call GPT-4 with new client format
-        response = client.chat.completions.create(
-            model="gpt-4",
+        # Call GPT-4 client
+        openai_response = client.chat.completions.create(
+            model=openai_model,
             temperature=0.1,
             timeout=90,  # 90 second timeout for OpenAI API call
             messages=[
@@ -158,13 +207,56 @@ Return the data in a similar JSON format:
                 {"role": "user", "content": prompt}
             ]
         )
+        openai_response_content = str(openai_response.choices[0].message.content)
 
-        # Extract the JSON response (new format)
-        extracted_data = response.choices[0].message.content
-        logger.debug("Successfully processed with GPT-4")
-        token_counts = estimate_token_count(prompt, extracted_data)
+        # Call DeepSeek client
+        deepseek_response = deepseek_client.complete(
+            model=deepseek_model,
+            temperature=0.1,
+            timeout=90,  # 90 second timeout for OpenAI API call
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an invoice data extraction assistant. IMPORTANT: Return ONLY valid JSON with no preamble, no explanations, and no additional text. The response must start with '{' and end with '}'."
+                },
+                {"role": "user", "content": prompt}
+            ]
+        )
+        deepseek_response_content = str(deepseek_response.choices[0].message.content)
 
-        return jsonify({"success": True, "data": extracted_data, "tokens": token_counts})
+        # Call Anthropic client
+        response = anthropic_client.messages.create(
+            model=anthropic_model,
+            max_tokens=4000,
+            temperature=0.1,
+            system="You are an invoice data extraction assistant. IMPORTANT: Return ONLY valid JSON with no preamble, no explanations, and no additional text. The response must start with '{' and end with '}'",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+
+        # Anthropic returns a list of textblocks, so we need to convert the first one to a string
+        anthropic_response_content = str(response.content[0].text)  # Convert to string if it's a textblock
+
+        # set this to the model response you want to pass
+        response_content = deepseek_response_content
+
+        logger.debug("Response content before JSON extraction: %s", response_content)
+
+        # Trim leading characters before the first '{' and trailing characters after the last '}'
+
+
+        
+
+        # Extract the JSON response
+        # extracted_data = extract_json_from_response(response_content)
+        # To Do : update token counts for different models
+        # token_counts = estimate_token_count(prompt, extracted_data)
+
+        return jsonify({"success": True, "data": {"deepseek": extract_json_from_response(deepseek_response_content), "openai": extract_json_from_response(openai_response_content), "anthropic": extract_json_from_response(anthropic_response_content)}, "tokens": 1})
 
     except Exception as e:
         logger.error(f"Error processing request: {str(e)}", exc_info=True)

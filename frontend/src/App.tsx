@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Container, Box, Text, Stack} from '@chakra-ui/react'
 import axios from 'axios'
 import FileUpload from './components/FileUpload'
@@ -15,12 +15,52 @@ const api = axios.create({
   }
 })
 
+interface IInvoice {
+  vendor_name?: string;
+  invoice_date?: Date | null;
+  due_date?: Date | null;
+  // Add other fields as necessary
+}
+
+// Function to convert string dates to Date objects
+const convertToDate = (data: any): Partial<IInvoice> => {
+  return {
+    ...data,
+    invoice_date: data.invoice_date ? new Date(data.invoice_date) : null,
+    due_date: data.due_date ? new Date(data.due_date) : null,
+  };
+};
+
 function App() {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [extractedData, setExtractedData] = useState<any>(null)
   const [tokenCounts, setTokenCounts] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const formRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const handleScroll = (event: Event) => {
+      const target = event.target as HTMLDivElement
+      const scrollTop = target.scrollTop
+      formRefs.current.forEach((form) => {
+        if (form && form !== target) {
+          form.scrollTop = scrollTop
+        }
+      })
+    }
+
+    const firstForm = formRefs.current[0]
+    if (firstForm) {
+      firstForm.addEventListener('scroll', handleScroll)
+    }
+
+    return () => {
+      if (firstForm) {
+        firstForm.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [])
 
   const handleFileUpload = async (uploadedFile: File) => {
     setFile(uploadedFile)
@@ -47,7 +87,7 @@ function App() {
       console.log('Response received:', response)
 
       if (response.data.success) {
-        const parsedData = JSON.parse(response.data.data)
+        const parsedData = response.data.data
         console.log('Parsed data:', parsedData)
         setExtractedData(parsedData)
         setTokenCounts(response.data.tokens)
@@ -74,7 +114,7 @@ function App() {
   }
 
   return (
-    <Container maxW="container.xl" py={8}>
+    <Container maxW="100%" py={16}>
       <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={6}>
         Document Data Extraction
       </Text>
@@ -85,14 +125,24 @@ function App() {
           {file && <PdfViewer file={file} />}
         </Box>
         
-        <Box flex={1} backgroundColor="white" shadow="md" p={4} borderRadius="lg">
+        <Box flex={2} backgroundColor="white" shadow="md" p={4} borderRadius="lg">
           {loading && <LoadingSpinner />}
           {error && (
             <Text color="red.500" textAlign="center">
               {error}
             </Text>
           )}
-          {extractedData && <ResultForm data={extractedData} tokenCounts={tokenCounts} />}
+          {extractedData && (
+            <Box overflowY="auto" height="calc(100vh - 240px)">
+              <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
+                {Object.entries(extractedData).map(([key, data]) => (
+                  <Box key={key} mb={4} flex={1} >
+                    <ResultForm data={convertToDate(data)} tokenCounts={tokenCounts} model={key}/>
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
+          )}
         </Box>
       </Stack>
     </Container>

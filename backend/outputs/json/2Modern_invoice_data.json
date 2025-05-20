@@ -1,0 +1,34 @@
+{
+  "invoice_details": {
+    "customer_po": "Box"
+  },
+  "company_information": {
+    "vendor": "2Modern",
+    "company_address": {},
+    "payment_address": {}
+  },
+  "billing_information": {
+    "address": {
+      "street": "Submit Payment To:",
+      "city": "2Modern\n\u00a0 \u00a0PO Box 840603\n\u00a0 \u00a0Los Angeles",
+      "state": "CA 90084-060335 Miller Ave #192\nMill Valley, California",
+      "zip": "94941",
+      "country": "United StatesCompany Address"
+    },
+    "name": "NamePO#24-DPA3-023 Customer PO #pondi@2modern.com EmailDirect: 925.448.9105 PhonePondi Sottile Prepared By3/25/2025 Created DatePO#24-DPA3-023 Quote Name263048 Invoice"
+  },
+  "shipping_information": {
+    "address": {
+      "street": "Portland, Oregon 97205",
+      "city": "United StatesBill ToHollywood FL Owner",
+      "state": "LLC c/o Source Bill To NamePO#24-DPA3-023 Customer PO #pondi@2modern.com EmailDirect: 925.448.9105 PhonePondi Sottile Prepared By3/25/2025 Created DatePO#24-DPA3-023 Quote Name263048 Invoice\nSubmit Payment To: \u00a0 \u00a0\n\u00a0 \u00a02Modern\n\u00a0 \u00a0PO Box",
+      "zip": "840603",
+      "country": "Los Angeles, CA 90084-060335 Miller Ave #192"
+    },
+    "name": "921 SW Washington Street, Suite 518"
+  },
+  "prepared_by": {},
+  "line_items": [],
+  "financial_summary": {},
+  "notes": []
+}
